@@ -8,7 +8,7 @@ namespace QManagerOracle
     public class SQLPlus : ParamsDB
     {
         public SQLPlus()
-        {
+        { 
         }
         public SQLPlus(ParamsDB @params)
         {
