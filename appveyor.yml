@@ -1,0 +1,18 @@
+version: 1.0.{build}
+configuration: Release
+platform: Any CPU
+build:
+  publish_nuget: true
+  publish_nuget_symbols: true
+  use_snupkg_format: true
+  include_nuget_references: true
+  verbosity: minimal
+artifacts:
+- path: '**\*.nupkg'
+  name: Nuget
+deploy:
+- provider: NuGet
+  server: https://www.nuget.org/packages/QManagerOracle/
+  api_key:
+    secure: TAaN8deTs7iqjMysGFiqC5kGHutH6U9ctTjvPlRL/+9sI7sLH9j5upIgodpzD/jE
+  artifact: /.*\.nupkg/
