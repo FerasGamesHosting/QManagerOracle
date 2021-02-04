@@ -1,9 +1,0 @@
-C:\Users\Rafael\source\repos\QManagerOracle\QManagerOracle\bin\Debug\netstandard2.0\QManagerOracle.deps.json
-C:\Users\Rafael\source\repos\QManagerOracle\QManagerOracle\bin\Debug\netstandard2.0\QManagerOracle.dll
-C:\Users\Rafael\source\repos\QManagerOracle\QManagerOracle\bin\Debug\netstandard2.0\QManagerOracle.pdb
-C:\Users\Rafael\source\repos\QManagerOracle\QManagerOracle\obj\Debug\netstandard2.0\QManagerOracle.csprojAssemblyReference.cache
-C:\Users\Rafael\source\repos\QManagerOracle\QManagerOracle\obj\Debug\netstandard2.0\QManagerOracle.AssemblyInfoInputs.cache
-C:\Users\Rafael\source\repos\QManagerOracle\QManagerOracle\obj\Debug\netstandard2.0\QManagerOracle.AssemblyInfo.cs
-C:\Users\Rafael\source\repos\QManagerOracle\QManagerOracle\obj\Debug\netstandard2.0\QManagerOracle.csproj.CoreCompileInputs.cache
-C:\Users\Rafael\source\repos\QManagerOracle\QManagerOracle\obj\Debug\netstandard2.0\QManagerOracle.dll
-C:\Users\Rafael\source\repos\QManagerOracle\QManagerOracle\obj\Debug\netstandard2.0\QManagerOracle.pdb
