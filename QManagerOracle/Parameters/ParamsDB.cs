@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace QManagerOracle
+namespace QManagerOracle.Parameters
 {
     public class ParamsDB
     {

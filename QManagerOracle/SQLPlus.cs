@@ -1,14 +1,15 @@
-﻿using System;
+﻿using QManagerOracle.Parameters;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace QManagerOracle
 {
-    public class SQLPlus : ParamsDB
+    public class SQLPlus : ParamsDB , IParamsScript
     {
         public SQLPlus()
-        { 
+        {
         }
         public SQLPlus(ParamsDB @params)
         {
@@ -19,118 +20,83 @@ namespace QManagerOracle
             this.Service = @params.Service ?? throw new ArgumentNullException(nameof(@params.Service));
             this.UserDB = @params.UserDB ?? throw new ArgumentNullException(nameof(@params.UserDB));
         }
-        struct Script
+   
+        public Dictionary<IParamsScript,Task> Tarefas = new Dictionary<IParamsScript, Task>();
+        protected List<IParamsScript> Scripts = new List<IParamsScript>();
+
+        public int ID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int IDNext { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string ScriptName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string ScriptDir { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Parameters { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool Wait { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        void Execute(IParamsScript script)
         {
-            public int ID;
-            public int IDNext;
-            public string ScriptName;
-            public string ScriptDir;
-            public bool Wait;
+            using Process process = new Process();
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.WorkingDirectory = script.ScriptDir;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardInput = true;
+            process.StartInfo.FileName = "cmd.exe";
+            //process.StartInfo.Arguments = "chcp 65001";
+
+            process.StartInfo.CreateNoWindow = true;
+
+            process.Start();
+
+            process.StandardInput.WriteLine($@"start {PathClient}sqlplus.exe {GetCredentials()} @{script.ScriptName} {script.Parameters}");
+            process.StandardInput.Flush();
+            process.StandardInput.Close();
+            string output = process.StandardOutput.ReadToEnd();
+            process.WaitForExit();
         }
-
-        readonly List<Script> Scripts = new List<Script>();
-        void Execute(string scriptDir, string scriptFilename)
-        {
-            using (Process process = new Process())
-            {
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.WorkingDirectory = scriptDir;
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardInput = true;
-                process.StartInfo.FileName = "cmd.exe";
-                //process.StartInfo.Arguments = "chcp 65001";
-
-                process.StartInfo.CreateNoWindow = true;
-
-                process.Start();
-
-                process.StandardInput.WriteLine($@"start {PathClient}sqlplus.exe {GetCredentials()} @{scriptFilename}");
-                process.StandardInput.Flush();
-                process.StandardInput.Close();
-                string output = process.StandardOutput.ReadToEnd();
-                process.WaitForExit();
-            }
-        }
-
+        [Obsolete("Em fase de construção")]
         public async void ExecuteAllAsync()
         {
             List<Task> TarefasWait = new List<Task>();
             List<Task> TarefasNoWait = new List<Task>();
 
-            foreach (Script iScript in Scripts)
+            foreach (IParamsScript iScript in Scripts)
             {
                 if (iScript.Wait)
                 {
-                    TarefasWait.Add(new Task(() => { Execute(iScript.ScriptDir, iScript.ScriptName); }));
+                    TarefasWait.Add(new Task(() => { Execute(iScript); }));
                 }
                 else
                 {
-                    TarefasNoWait.Add(new Task(() => { Execute(iScript.ScriptDir, iScript.ScriptName); }));
+                    TarefasNoWait.Add(new Task(() => { Execute(iScript); }));
                 }
-                
+
             }
             TarefasWait.ForEach((t) => { t.Start(); });
             TarefasNoWait.ForEach((t) => { t.Start(); });
             //Parallel.ForEach<Task>(Tarefas, (t) => { t.Start()});
             await Task.WhenAll(TarefasWait.ToArray());
-        }
-
-
-        //public static string ExecuteLOADER_S(string PathOra, string credentials, string scriptDir, string CTL, string arquivoUpload)
-        //{
-        //    string output = string.Empty;
-        //    using (Process process = new Process())
-        //    {
-        //        process.StartInfo.UseShellExecute = false;
-        //        process.StartInfo.WorkingDirectory = scriptDir;
-        //        process.StartInfo.RedirectStandardOutput = true;
-        //        process.StartInfo.RedirectStandardInput = true;
-        //        process.StartInfo.FileName = "cmd.exe";
-
-        //        process.StartInfo.CreateNoWindow = true;
-
-        //        process.Start();
-
-        //        string[] vs = { ".txt", ".csv", @"\", "." };
-        //        string[] log = arquivoUpload.Split(vs, StringSplitOptions.RemoveEmptyEntries);
-        //        process.StandardInput.WriteLine(string.Format(@"start {0}SQLLDR.exe {1} control={2} log=.\LOG\{3}.log bad=.\BAD\{3}.bad data={4}", PathOra, credentials, CTL, log[log.Length - 1], arquivoUpload));
-        //        process.StandardInput.Flush();
-        //        process.StandardInput.Close();
-        //        output = process.StandardOutput.ReadToEnd();
-        //        process.WaitForExit();
-        //        try
-        //        {
-        //            File.Delete(CTL);
-        //        }
-        //        catch (Exception)
-        //        {
-        //            throw;
-        //        }
-
-        //    }
-
-        //    return output;
-        //}
-        public async void ExecuteAsync(string scriptDir, string scriptFilename)
+        }        
+        public async void ExecuteAsync(IParamsScript script)
         {
-            await Task.Run(() => Execute(scriptDir, scriptFilename));
+            await Task.Run(() => Execute(script));
         }
-        
 
-        public void Add(string scriptDir, string scriptFilename, bool wait = false, int id = 1)
+        [Obsolete("Em fase de construção")]
+        public void Add(IParamsScript script)
         {
             Scripts.Add(
-                new Script()
+                new ParamsScript()
                 {
-                    ID = id,
-                    ScriptDir = scriptDir,
-                    ScriptName = scriptFilename,
-                    Wait = wait
+                    ID = script.ID,
+                    IDNext = script.IDNext,
+                    ScriptDir = script.ScriptDir,
+                    ScriptName = script.ScriptName,
+                    Parameters = script.Parameters,
+                    Wait = script.Wait
                 });
         }
+        [Obsolete("Em fase de construção")]
         public void Clear()
         {
-
+            Scripts.Clear();
         }
     }
 }
