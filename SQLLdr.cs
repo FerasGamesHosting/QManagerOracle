@@ -5,8 +5,12 @@ using System.IO;
 
 namespace QManagerOracle
 {
-    public class SQLLdr : ParamsDB
+    public class SQLLdr : ParamsDB, IParamsLoader
     {
+        public SQLLdr()
+        {
+        }
+
         public SQLLdr(ParamsDB @params)
         {
             this.IPAdress = @params.IPAdress ?? throw new ArgumentNullException(nameof(@params.IPAdress));
@@ -17,18 +21,23 @@ namespace QManagerOracle
             this.UserDB = @params.UserDB ?? throw new ArgumentNullException(nameof(@params.UserDB));
         }
 
-        public string Execute(string scriptDir, string CTL, string arquivoUpload)
+        public string DirFile { get; set; }
+        public string DirControl { get; set; }
+        public string FileUpload { get; set; }
+        public string FileControl { get ; set ; }
+
+        void Execute(ParamsLoader loader)
         {
-            if (!Directory.Exists(@$"{scriptDir}\CTL")) 
-            { 
-                Directory.CreateDirectory(@$"{scriptDir}\CTL");
-                throw new Exception(@$"Insert control file in path:\n{scriptDir}\CTL");
+            if (!Directory.Exists(loader.DirControl))
+            {
+                Directory.CreateDirectory(loader.DirControl);
+                throw new Exception(@$"Insert control file in path:\n{loader.DirControl}");
             }
-            string output = string.Empty;
+            
             using Process process = new Process();
 
             process.StartInfo.UseShellExecute = false;
-            process.StartInfo.WorkingDirectory = scriptDir;
+            process.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.RedirectStandardInput = true;
             process.StartInfo.FileName = "cmd.exe";
@@ -38,24 +47,22 @@ namespace QManagerOracle
             process.Start();
 
             string[] vs = { ".txt", ".csv", @"\", "." };
-            string[] log = arquivoUpload.Split(vs, StringSplitOptions.RemoveEmptyEntries);
-            process.StandardInput.WriteLine(@$"start {0}SQLLDR.exe {GetCredentials()} control=.\CTL\{CTL} log=.\LOG\{log[log.Length - 1]}.log bad=.\BAD\{log[log.Length - 1]}.bad data={arquivoUpload}");
+            string[] log = loader.FileUpload.Split(vs, StringSplitOptions.RemoveEmptyEntries);
+            process.StandardInput.WriteLine(@$"start {0}SQLLDR.exe {GetCredentials()} control={loader.FileControl} log=.\LOG\{log[log.Length - 1]}.log bad=.\BAD\{log[log.Length - 1]}.bad data={loader.FileUpload}");
             process.StandardInput.Flush();
             process.StandardInput.Close();
-            output = process.StandardOutput.ReadToEnd();
+            var output = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
             try
             {
-                File.Delete(CTL);
+                File.Delete(loader.FileControl);
             }
             catch (Exception)
             {
                 throw;
             }
-
-
-
-            return output;
         }
+
+
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QManagerOracle
 {
-    public class SQLPlus : ParamsDB , IParamsScript
+    public class SQLPlus : ParamsDB, IParamsScript
     {
         public SQLPlus()
         {
@@ -21,16 +21,16 @@ namespace QManagerOracle
             this.Service = @params.Service ?? throw new ArgumentNullException(nameof(@params.Service));
             this.UserDB = @params.UserDB ?? throw new ArgumentNullException(nameof(@params.UserDB));
         }
-   
-        public Dictionary<IParamsScript,Task> Tarefas = new Dictionary<IParamsScript, Task>();
+
+        public Dictionary<IParamsScript, Task> Tarefas = new Dictionary<IParamsScript, Task>();
         protected List<IParamsScript> Scripts = new List<IParamsScript>();
 
-        public int ID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int IDNext { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string ScriptName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string ScriptDir { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string Parameters { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public bool Wait { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int ID { get; set; }
+        public int IDNext { get; set; }
+        public string ScriptName { get; set; }
+        public string ScriptDir { get; set; }
+        public string Parameters { get; set; }
+        public bool Wait { get; set; }
 
         void Execute(IParamsScript script)
         {
@@ -79,7 +79,7 @@ namespace QManagerOracle
             TarefasNoWait.ForEach((t) => { t.Start(); });
             //Parallel.ForEach<Task>(Tarefas, (t) => { t.Start()});
             await Task.WhenAll(TarefasWait.ToArray());
-        }        
+        }
         public async void ExecuteAsync(IParamsScript script)
         {
             await Task.Run(() => Execute(script));
