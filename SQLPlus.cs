@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace QManagerOracle
@@ -33,6 +34,11 @@ namespace QManagerOracle
 
         void Execute(IParamsScript script)
         {
+            if (!Directory.Exists(script.ScriptDir))
+            {
+                Directory.CreateDirectory(script.ScriptDir);
+                throw new Exception(@$"Insert script file in path:\n{script.ScriptDir}");
+            }
             using Process process = new Process();
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.WorkingDirectory = script.ScriptDir;
