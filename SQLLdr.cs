@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace QManagerOracle
 {
@@ -24,45 +25,51 @@ namespace QManagerOracle
         public string DirFile { get; set; }
         public string DirControl { get; set; }
         public string FileUpload { get; set; }
-        public string FileControl { get ; set ; }
+        public string FileControl { get; set; }
 
         void Execute(ParamsLoader loader)
         {
             if (!Directory.Exists(loader.DirControl))
             {
                 Directory.CreateDirectory(loader.DirControl);
-                throw new Exception(@$"Insert control file in path:\n{loader.DirControl}");
+                throw new Exception($@"Insert control file in path:\n{loader.DirControl}");
             }
-            
-            using Process process = new Process();
 
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.RedirectStandardInput = true;
-            process.StartInfo.FileName = "cmd.exe";
-
-            process.StartInfo.CreateNoWindow = true;
-
-            process.Start();
-
-            string[] vs = { ".txt", ".csv", @"\", "." };
-            string[] log = loader.FileUpload.Split(vs, StringSplitOptions.RemoveEmptyEntries);
-            process.StandardInput.WriteLine(@$"start {0}SQLLDR.exe {GetCredentials()} control={loader.FileControl} log=.\LOG\{log[log.Length - 1]}.log bad=.\BAD\{log[log.Length - 1]}.bad data={loader.FileUpload}");
-            process.StandardInput.Flush();
-            process.StandardInput.Close();
-            var output = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
-            try
+            using (Process process = new Process())
             {
-                File.Delete(loader.FileControl);
-            }
-            catch (Exception)
-            {
-                throw;
+
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardInput = true;
+                process.StartInfo.FileName = "cmd.exe";
+
+                process.StartInfo.CreateNoWindow = true;
+
+                process.Start();
+
+                string[] vs = { ".txt", ".csv", @"\", "." };
+                string[] log = loader.FileUpload.Split(vs, StringSplitOptions.RemoveEmptyEntries);
+                process.StandardInput.WriteLine($@"start {0}SQLLDR.exe {GetCredentials()} control={loader.FileControl} log=.\LOG\{log[log.Length - 1]}.log bad=.\BAD\{log[log.Length - 1]}.bad data={loader.FileUpload}");
+                process.StandardInput.Flush();
+                process.StandardInput.Close();
+                var output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+                try
+                {
+                    File.Delete(loader.FileControl);
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
             }
         }
 
-
+        public async void ExecuteAsync(ParamsLoader loader)
+        {
+            await Task.Run(() => Execute(loader));
+        }
     }
 }

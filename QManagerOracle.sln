@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QManagerOracle", "QManagerOracle.csproj", "{B6FD7EBD-1D8B-4C44-AE03-3C9F331D0988}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QManagerOracle", "QManagerOracle.csproj", "{BC6814A0-688F-42EB-BB0D-49E81C3672D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B6FD7EBD-1D8B-4C44-AE03-3C9F331D0988}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B6FD7EBD-1D8B-4C44-AE03-3C9F331D0988}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B6FD7EBD-1D8B-4C44-AE03-3C9F331D0988}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B6FD7EBD-1D8B-4C44-AE03-3C9F331D0988}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC6814A0-688F-42EB-BB0D-49E81C3672D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC6814A0-688F-42EB-BB0D-49E81C3672D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC6814A0-688F-42EB-BB0D-49E81C3672D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC6814A0-688F-42EB-BB0D-49E81C3672D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {450DBEB7-8947-4A8D-B5C4-78F5F4529BB8}
+		SolutionGuid = {85DB4328-3087-412D-ADE3-7BB40AB615F0}
 	EndGlobalSection
 EndGlobal

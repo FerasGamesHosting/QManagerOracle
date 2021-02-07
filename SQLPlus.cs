@@ -37,25 +37,28 @@ namespace QManagerOracle
             if (!Directory.Exists(script.ScriptDir))
             {
                 Directory.CreateDirectory(script.ScriptDir);
-                throw new Exception(@$"Insert script file in path:\n{script.ScriptDir}");
+                throw new Exception($@"Insert script file in path:\n{script.ScriptDir}");
             }
-            using Process process = new Process();
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.WorkingDirectory = script.ScriptDir;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.RedirectStandardInput = true;
-            process.StartInfo.FileName = "cmd.exe";
-            //process.StartInfo.Arguments = "chcp 65001";
+            using (Process process = new Process())
+            {
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.WorkingDirectory = script.ScriptDir;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardInput = true;
+                process.StartInfo.FileName = "cmd.exe";
+                //process.StartInfo.Arguments = "chcp 65001";
 
-            process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.CreateNoWindow = true;
 
-            process.Start();
+                process.Start();
 
-            process.StandardInput.WriteLine($@"start {PathClient}sqlplus.exe {GetCredentials()} @{script.ScriptName} {script.Parameters}");
-            process.StandardInput.Flush();
-            process.StandardInput.Close();
-            string output = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
+                process.StandardInput.WriteLine($@"start {PathClient}sqlplus.exe {GetCredentials()} @{script.ScriptName} {script.Parameters}");
+                process.StandardInput.Flush();
+                process.StandardInput.Close();
+                string output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+                process.WaitForExit();
+            }
         }
         [Obsolete("Em fase de construção")]
         public async void ExecuteAllAsync()

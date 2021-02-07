@@ -1,12 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1</Version>
-    <Authors>Rafael Andrade da Silva</Authors>
+    <TargetFrameworks>netcoreapp3.1;net45;net46;net47</TargetFrameworks>
     <Company>FerasGames Hosting</Company>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Authors>Rafael Andrade da Silva</Authors>
+    <PackageIcon>logo_QManager.png</PackageIcon>
+    <Version>1.0.2</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\Pictures\logo_QManager.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>
