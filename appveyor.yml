@@ -3,11 +3,11 @@ configuration: Release
 platform: Any CPU
 build_script:
 - cmd: >-
-    dotnet restore .\QManagerOracle\
+    dotnet restore .\
 
-    dotnet build .\QManagerOracle\
+    dotnet build .\
 
-    dotnet pack .\QManagerOracle\
+    dotnet pack .\
 artifacts:
 - path: '**\*.nupkg'
   name: Nuget
