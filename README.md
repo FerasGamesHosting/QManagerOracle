@@ -12,20 +12,22 @@
 
 # How to use
 ```csharp
-SQLPlus sql = new SQLPlus();
+using QManagerOracle;
+using QManagerOracle.Parameters;
 
-sql.ExecuteAsync(new ParamsScript()
+async void teste()
 {
-	Parameters = "",
-	ScriptDir = Environment.CurrentDirectory,
-	ScriptName = "criar_tabela.sql"
-},
-new ParamsDB() 
-{
-	CriarNovaJanela = true,
-	IPAdress = "192.168.0.4",
-	PassDB = "1234"
-});
+    SQLPlus sql = new SQLPlus();
+    SQLLdr ldr = new SQLLdr();
+    var paramsDB = new ParamsDB()
+    {
+        CriarNovaJanela = true,
+        IPAdress = "192.168.0.4",
+        PassDB = "1234"
+    };
+    await sql.ExecuteAsync(new ParamsScript() { Parameters = "", ScriptDir = Environment.CurrentDirectory, ScriptName = "criar_tabela.sql" }, paramsDB);
+    await ldr.ExecuteAsync(new ParamsLoader() { DirControl = Environment.CurrentDirectory, FileUpload = "carga_teste.txt", FileControl = "carga.ctl" }, paramsDB);
+}
 
 ```
 

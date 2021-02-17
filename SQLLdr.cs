@@ -22,20 +22,20 @@ namespace QManagerOracle
             this.UserDB = @params.UserDB ?? throw new ArgumentNullException(nameof(@params.UserDB));
         }
 
-        void Execute(ParamsLoader loader, ParamsDB paramsDB)
+        string Execute(ParamsLoader loader, ParamsDB paramsDB)
         {
-            string Credentials, ComandoStartNewWindow, FileNameSystem;
+            string Credentials, ComandoStartNewWindow, FileNameSystem, output;
             if (CriarNovaJanela && Environment.OSVersion.Platform != PlatformID.Unix) ComandoStartNewWindow = "start "; else ComandoStartNewWindow = "";
             if (Environment.OSVersion.Platform == PlatformID.Unix) FileNameSystem = "/bin/bash"; else FileNameSystem = "cmd.exe";
             if (paramsDB != null) Credentials = paramsDB.GetCredentials(); else Credentials = GetCredentials();
 
-            if (!Directory.Exists(loader.DirControl))
+            if (!Directory.Exists(loader.DirWorkControl))
             {
-                Directory.CreateDirectory(loader.DirControl);
-                throw new Exception($@"Insert control file in path:\n{loader.DirControl}");
+                Directory.CreateDirectory(loader.DirWorkControl);
+                throw new Exception($@"Insert control file in path:\n{loader.DirWorkControl}");
             }
-            var LogDir = $"{loader.DirControl}\\LOG";
-            var BadDir = $"{loader.DirControl}\\BAD";
+            var LogDir = $"{loader.DirWorkControl}\\LOG";
+            var BadDir = $"{loader.DirWorkControl}\\BAD";
             if (!Directory.Exists(LogDir) || !Directory.Exists(BadDir))
             {
                 Directory.CreateDirectory(LogDir);
@@ -45,7 +45,7 @@ namespace QManagerOracle
             {
 
                 process.StartInfo.UseShellExecute = false;
-                process.StartInfo.WorkingDirectory = loader.DirControl;
+                process.StartInfo.WorkingDirectory = loader.DirWorkControl;
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.RedirectStandardInput = true;
                 process.StartInfo.FileName = FileNameSystem;
@@ -59,16 +59,17 @@ namespace QManagerOracle
                 process.StandardInput.WriteLine($@"{ComandoStartNewWindow}{PathClient}SQLLDR.exe {Credentials} control={loader.FileControl} log=.\LOG\{NomeSemExtensao}.log bad=.\BAD\{NomeSemExtensao}.bad data={loader.FileUpload}");
                 process.StandardInput.Flush();
                 process.StandardInput.Close();
-                var output = process.StandardOutput.ReadToEnd();
+                output = process.StandardOutput.ReadToEnd();
                 process.WaitForExit();
             }
+            return output;
         }
 
-        public async void ExecuteAsync(ParamsLoader loader, ParamsDB paramsDB = null)
+        public async Task<string> ExecuteAsync(ParamsLoader loader, ParamsDB paramsDB = null)
         {
             try
             {
-                await Task.Run(() => Execute(loader, paramsDB));
+               return await Task.Run(() => Execute(loader, paramsDB));
             }
             catch (Exception ex)
             {

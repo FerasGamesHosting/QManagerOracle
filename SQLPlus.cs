@@ -22,9 +22,9 @@ namespace QManagerOracle
             this.UserDB = @params.UserDB ?? throw new ArgumentNullException(nameof(@params.UserDB));
         }
 
-        void Execute(ParamsScript script, ParamsDB paramsDB)
+        string Execute(ParamsScript script, ParamsDB paramsDB)
         {
-            string Credentials, ComandoStartNewWindow, FileNameSystem;
+            string Credentials, ComandoStartNewWindow, FileNameSystem, output;
             if (CriarNovaJanela && Environment.OSVersion.Platform != PlatformID.Unix) ComandoStartNewWindow = "start "; else ComandoStartNewWindow = "";
             if (Environment.OSVersion.Platform == PlatformID.Unix) FileNameSystem = "/bin/bash"; else FileNameSystem = "cmd.exe";
 
@@ -49,16 +49,17 @@ namespace QManagerOracle
                 process.StandardInput.WriteLine($@"{ComandoStartNewWindow}{PathClient}sqlplus.exe {Credentials} @{script.ScriptName} {script.Parameters}");
                 process.StandardInput.Flush();
                 process.StandardInput.Close();
-                string output = process.StandardOutput.ReadToEnd();
+                output = process.StandardOutput.ReadToEnd();
                 process.WaitForExit();
             }
+            return output;
         }
 
-        public async void ExecuteAsync(ParamsScript script, ParamsDB paramsDB = null)
+        public async Task<string> ExecuteAsync(ParamsScript script, ParamsDB paramsDB = null)
         {
             try
             {
-                await Task.Run(() => Execute(script, paramsDB));
+               return await Task.Run(() => Execute(script, paramsDB));
             }
             catch (Exception ex)
             {
