@@ -1,6 +1,6 @@
 ﻿namespace QManagerOracle.Parameters
 {
-    public class ParamsScript : IParamsScript
+    public class ParamsScript 
     {
         public int ID { get; set; }
         public int IDNext { get; set; }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace QManagerOracle.Parameters
 {
-    public class ParamsLoader : IParamsLoader
+    public class ParamsLoader 
     {
         public string DirFile { get; set; }
         public string DirControl { get; set; }

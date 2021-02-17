@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QManagerOracle
 {
-    public class SQLPlus : ParamsDB, IParamsScript
+    public class SQLPlus : ParamsDB
     {
         public SQLPlus()
         {
@@ -22,18 +22,13 @@ namespace QManagerOracle
             this.UserDB = @params.UserDB ?? throw new ArgumentNullException(nameof(@params.UserDB));
         }
 
-        public Dictionary<IParamsScript, Task> Tarefas = new Dictionary<IParamsScript, Task>();
-        protected List<IParamsScript> Scripts = new List<IParamsScript>();
-
-        public int ID { get; set; }
-        public int IDNext { get; set; }
-        public string ScriptName { get; set; }
-        public string ScriptDir { get; set; }
-        public string Parameters { get; set; }
-        public bool Wait { get; set; }
-
-        void Execute(IParamsScript script)
+        void Execute(ParamsScript script, ParamsDB paramsDB)
         {
+            string Credentials, ComandoStartNewWindow, FileNameSystem;
+            if (CriarNovaJanela && Environment.OSVersion.Platform != PlatformID.Unix) ComandoStartNewWindow = "start "; else ComandoStartNewWindow = "";
+            if (Environment.OSVersion.Platform == PlatformID.Unix) FileNameSystem = "/bin/bash"; else FileNameSystem = "cmd.exe";
+
+            if (paramsDB != null) Credentials = paramsDB.GetCredentials(); else Credentials = GetCredentials();
             if (!Directory.Exists(script.ScriptDir))
             {
                 Directory.CreateDirectory(script.ScriptDir);
@@ -45,67 +40,42 @@ namespace QManagerOracle
                 process.StartInfo.WorkingDirectory = script.ScriptDir;
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.RedirectStandardInput = true;
-                process.StartInfo.FileName = "cmd.exe";
-                //process.StartInfo.Arguments = "chcp 65001";
+                process.StartInfo.FileName = FileNameSystem;
 
-                process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.CreateNoWindow = !CriarNovaJanela;
 
                 process.Start();
 
-                process.StandardInput.WriteLine($@"start {PathClient}sqlplus.exe {GetCredentials()} @{script.ScriptName} {script.Parameters}");
+                process.StandardInput.WriteLine($@"{ComandoStartNewWindow}{PathClient}sqlplus.exe {Credentials} @{script.ScriptName} {script.Parameters}");
                 process.StandardInput.Flush();
                 process.StandardInput.Close();
                 string output = process.StandardOutput.ReadToEnd();
                 process.WaitForExit();
-                process.WaitForExit();
             }
         }
-        [Obsolete("Em fase de construção")]
-        public async void ExecuteAllAsync()
-        {
-            List<Task> TarefasWait = new List<Task>();
-            List<Task> TarefasNoWait = new List<Task>();
 
-            foreach (IParamsScript iScript in Scripts)
+        public async void ExecuteAsync(ParamsScript script, ParamsDB paramsDB = null)
+        {
+            try
             {
-                if (iScript.Wait)
-                {
-                    TarefasWait.Add(new Task(() => { Execute(iScript); }));
-                }
-                else
-                {
-                    TarefasNoWait.Add(new Task(() => { Execute(iScript); }));
-                }
-
+                await Task.Run(() => Execute(script, paramsDB));
             }
-            TarefasWait.ForEach((t) => { t.Start(); });
-            TarefasNoWait.ForEach((t) => { t.Start(); });
-            //Parallel.ForEach<Task>(Tarefas, (t) => { t.Start()});
-            await Task.WhenAll(TarefasWait.ToArray());
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
-        public async void ExecuteAsync(IParamsScript script)
+        public void ExecuteNonAsync(ParamsScript script, ParamsDB paramsDB = null)
         {
-            await Task.Run(() => Execute(script));
-        }
-
-        [Obsolete("Em fase de construção")]
-        public void Add(IParamsScript script)
-        {
-            Scripts.Add(
-                new ParamsScript()
-                {
-                    ID = script.ID,
-                    IDNext = script.IDNext,
-                    ScriptDir = script.ScriptDir,
-                    ScriptName = script.ScriptName,
-                    Parameters = script.Parameters,
-                    Wait = script.Wait
-                });
-        }
-        [Obsolete("Em fase de construção")]
-        public void Clear()
-        {
-            Scripts.Clear();
+            try
+            {
+                Task.Run(() => Execute(script, paramsDB));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
         }
     }
 }

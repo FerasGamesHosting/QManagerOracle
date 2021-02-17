@@ -23,9 +23,17 @@ namespace QManagerOracle.Parameters
         public string Service { get; set; } = "XE";
         public string UserDB { get; set; } = "SYSTEM";
         public string PassDB { get; set; } = "";
+        /// <summary>
+        /// Diretorio da instalação SQLPLUS e SQLLDR
+        /// Caso tenha colocado nas Variaveis de Ambiente não preencher
+        /// </summary>
         public string PathClient { get; set; } = "";
-
-        protected string GetCredentials()
+        /// <summary>
+        /// True para abrir uma nova janela com a execução
+        /// Por padrão é True
+        /// </summary>
+        public bool CriarNovaJanela { get; set; } = true;
+        public string GetCredentials()
         {
             return $"{UserDB}/{PassDB}@{IPAdress}:{Port}/{Service}";
         }
