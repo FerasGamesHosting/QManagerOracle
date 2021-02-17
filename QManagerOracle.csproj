@@ -5,13 +5,17 @@
     <Company>FerasGames Hosting</Company>
     <Authors>Rafael Andrade da Silva</Authors>
     <PackageIcon>logo_QManager.png</PackageIcon>
-    <Version>1.0.2.2</Version>
+    <Version>1.0.2.3</Version>
     <RepositoryUrl>https://github.com/FerasGamesHosting/QManagerOracle</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>sqlplus;sqlldr</PackageTags>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile />
     <PackageLicenseFile>CODE_OF_CONDUCT.md</PackageLicenseFile>
+    <Description>QManagerOracle é uma biblioteca para automação das aplicação SQLPlus e SQLLdr do cliente Oracle.</Description>
+    <Copyright>Copyright © FerasGames Hosting 2021</Copyright>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageProjectUrl>https://github.com/FerasGamesHosting/QManagerOracle</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
