@@ -11,7 +11,7 @@
 
 
 #How to use
-```
+```csharp
 SQLPlus sql = new SQLPlus();
 
 sql.ExecuteAsync(new ParamsScript()
