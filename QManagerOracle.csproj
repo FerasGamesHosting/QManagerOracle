@@ -5,13 +5,20 @@
     <Company>FerasGames Hosting</Company>
     <Authors>Rafael Andrade da Silva</Authors>
     <PackageIcon>logo_QManager.png</PackageIcon>
-    <Version>1.0.2.1</Version>
+    <Version>1.0.2.2</Version>
     <RepositoryUrl>https://github.com/FerasGamesHosting/QManagerOracle</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>sqlplus;sqlldr</PackageTags>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile />
+    <PackageLicenseFile>CODE_OF_CONDUCT.md</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="CODE_OF_CONDUCT.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <None Include="logo_QManager.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
