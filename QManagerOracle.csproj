@@ -16,6 +16,8 @@
     <Copyright>Copyright © FerasGames Hosting 2021</Copyright>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://github.com/FerasGamesHosting/QManagerOracle</PackageProjectUrl>
+    <AssemblyVersion>1.0.2.5</AssemblyVersion>
+    <FileVersion>1.0.2.5</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
