@@ -1,6 +1,5 @@
 ﻿using QManagerOracle.Parameters;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -59,7 +58,7 @@ namespace QManagerOracle
         {
             try
             {
-               return await Task.Run(() => Execute(script, paramsDB));
+                return await Task.Run(() => Execute(script, paramsDB));
             }
             catch (Exception ex)
             {
@@ -76,7 +75,24 @@ namespace QManagerOracle
             {
                 throw new Exception(ex.Message);
             }
-            
+
+        }
+        public Task TaskExecute(ParamsScript script, ParamsDB paramsDB = null)
+        {
+            try
+            {
+                Task task = new Task(() =>
+                {
+                    Execute(script, paramsDB);
+                }
+                );
+                return task;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
         }
     }
 }
