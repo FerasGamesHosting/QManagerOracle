@@ -8,5 +8,6 @@
         public string ScriptDir { get; set; }
         public string Parameters { get; set; }
         public bool Wait { get; set; }
+        public bool Debug { get; set; } = false;
     }
 }

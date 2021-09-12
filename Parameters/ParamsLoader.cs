@@ -9,5 +9,6 @@ namespace QManagerOracle.Parameters
         public string DirWorkControl { get; set; }
         public string FileUpload { get; set; }
         public string FileControl { get; set; }
+        public bool Debug { get; set; } = false;
     }
 }

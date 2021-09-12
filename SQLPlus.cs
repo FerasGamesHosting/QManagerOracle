@@ -8,10 +8,23 @@ namespace QManagerOracle
 {
     public class SQLPlus : ParamsDB
     {
+        public delegate void Debug(string result);
+        public event Debug DebugEventParams;
+        int ProcessID = 0;
         public SQLPlus()
         {
+            DebugEventParams += SQLPlus_DebugEventParams;
         }
-        public SQLPlus(ParamsDB @params)
+
+        private void SQLPlus_DebugEventParams(string result)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write("[Debug] ");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(result);
+        }
+
+        public SQLPlus(ParamsDB @params) : base()
         {
             this.IPAdress = @params.IPAdress ?? throw new ArgumentNullException(nameof(@params.IPAdress));
             this.PassDB = @params.PassDB ?? throw new ArgumentNullException(nameof(@params.PassDB));
@@ -20,14 +33,22 @@ namespace QManagerOracle
             this.Service = @params.Service ?? throw new ArgumentNullException(nameof(@params.Service));
             this.UserDB = @params.UserDB ?? throw new ArgumentNullException(nameof(@params.UserDB));
         }
-
-        string Execute(ParamsScript script, ParamsDB paramsDB)
+        void Execute(ParamsScript script, ParamsDB paramsDB)
         {
-            string Credentials, ComandoStartNewWindow, FileNameSystem, output;
-            if (CriarNovaJanela && Environment.OSVersion.Platform != PlatformID.Unix) ComandoStartNewWindow = "start "; else ComandoStartNewWindow = "";
+            string Credentials, ComandoStartNewWindow, FileNameSystem;
+            if (CriarNovaJanela && Environment.OSVersion.Platform == PlatformID.Win32NT) ComandoStartNewWindow = "start "; else ComandoStartNewWindow = "";
             if (Environment.OSVersion.Platform == PlatformID.Unix) FileNameSystem = "/bin/bash"; else FileNameSystem = "cmd.exe";
 
-            if (paramsDB != null) Credentials = paramsDB.GetCredentials(); else Credentials = GetCredentials();
+            if (paramsDB != null)
+            {
+                Credentials = paramsDB.GetCredentials();
+                CriarNovaJanela = paramsDB.CriarNovaJanela;
+            }
+            else
+            {
+                Credentials = GetCredentials();
+            }
+            if (CriarNovaJanela && Environment.OSVersion.Platform == PlatformID.Win32NT) ComandoStartNewWindow = "start "; else ComandoStartNewWindow = "";
             if (!Directory.Exists(script.ScriptDir))
             {
                 Directory.CreateDirectory(script.ScriptDir);
@@ -44,21 +65,41 @@ namespace QManagerOracle
                 process.StartInfo.CreateNoWindow = !CriarNovaJanela;
 
                 process.Start();
-
-                process.StandardInput.WriteLine($@"{ComandoStartNewWindow}{PathClient}sqlplus.exe {Credentials} @{script.ScriptName} {script.Parameters}");
+                ProcessID = process.Id;
+                string ProcPar = $@"{ComandoStartNewWindow}{PathClient}sqlplus.exe {Credentials} @{script.ScriptName} {script.Parameters}";
+                process.StandardInput.WriteLine(ProcPar);
                 process.StandardInput.Flush();
                 process.StandardInput.Close();
-                output = process.StandardOutput.ReadToEnd();
+
+                if (script.Debug)
+                {
+                    DebugEventParams.Invoke(ProcPar + Environment.NewLine);
+                }
+                DebugEventParams.Invoke(process.StandardOutput.ReadToEnd());
                 process.WaitForExit();
             }
-            return output;
         }
-
+        public void KillProcess()
+        {
+            if (ProcessID != 0)
+            {
+                using (Process process = Process.GetProcessById(ProcessID))
+                {
+                    process.Kill();
+                };
+            }
+        }
+        string ExecuteS(ParamsScript script, ParamsDB paramsDB)
+        {
+            Execute(script, paramsDB);
+            return string.Empty;
+        }
+        [Obsolete("Será retirado na proxima release, utilize o evento DebugEventParams para acompanhar em tempo real.")]
         public async Task<string> ExecuteAsync(ParamsScript script, ParamsDB paramsDB = null)
         {
             try
             {
-                return await Task.Run(() => Execute(script, paramsDB));
+                return await Task.Run(() => ExecuteS(script, paramsDB));
             }
             catch (Exception ex)
             {
