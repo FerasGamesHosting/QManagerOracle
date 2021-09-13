@@ -5,7 +5,7 @@
     <Company>FerasGames Hosting</Company>
     <Authors>Rafael Andrade da Silva</Authors>
     <PackageIcon>logo_QManager.png</PackageIcon>
-    <Version>1.0.2.5</Version>
+    <Version>1.0.2.6</Version>
     <RepositoryUrl>https://github.com/FerasGamesHosting/QManagerOracle</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>sqlplus;sqlldr</PackageTags>
@@ -16,8 +16,9 @@
     <Copyright>Copyright © FerasGames Hosting 2021</Copyright>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://github.com/FerasGamesHosting/QManagerOracle</PackageProjectUrl>
-    <AssemblyVersion>1.0.2.5</AssemblyVersion>
-    <FileVersion>1.0.2.5</FileVersion>
+    <AssemblyVersion>1.0.2.6</AssemblyVersion>
+    <FileVersion>1.0.2.6</FileVersion>
+    <PackageReleaseNotes>Implementado debug</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

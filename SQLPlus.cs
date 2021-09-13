@@ -21,7 +21,7 @@ namespace QManagerOracle
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("[Debug] ");
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine(result);
+            Console.Write(result);
         }
 
         public SQLPlus(ParamsDB @params) : base()
@@ -75,7 +75,10 @@ namespace QManagerOracle
                 {
                     DebugEventParams.Invoke(ProcPar + Environment.NewLine);
                 }
-                DebugEventParams.Invoke(process.StandardOutput.ReadToEnd());
+                while (!process.StandardOutput.EndOfStream)
+                {
+                    DebugEventParams.Invoke(process.StandardOutput.ReadLine() + Environment.NewLine);
+                }
                 process.WaitForExit();
             }
         }
@@ -89,17 +92,11 @@ namespace QManagerOracle
                 };
             }
         }
-        string ExecuteS(ParamsScript script, ParamsDB paramsDB)
-        {
-            Execute(script, paramsDB);
-            return string.Empty;
-        }
-        [Obsolete("Será retirado na proxima release, utilize o evento DebugEventParams para acompanhar em tempo real.")]
-        public async Task<string> ExecuteAsync(ParamsScript script, ParamsDB paramsDB = null)
+        public async Task ExecuteAsync(ParamsScript script, ParamsDB paramsDB = null)
         {
             try
             {
-                return await Task.Run(() => ExecuteS(script, paramsDB));
+                await Task.Run(() => Execute(script, paramsDB));
             }
             catch (Exception ex)
             {
@@ -121,13 +118,12 @@ namespace QManagerOracle
         public Task TaskExecute(ParamsScript script, ParamsDB paramsDB = null)
         {
             try
-            {
-                Task task = new Task(() =>
+            { 
+                return new Task(() =>
                 {
                     Execute(script, paramsDB);
                 }
-                );
-                return task;
+                ); 
             }
             catch (Exception ex)
             {

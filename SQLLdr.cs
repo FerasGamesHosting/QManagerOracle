@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QManagerOracle
 {
-    public class SQLLdr : ParamsDB
+    public class SQLLdr : ParamsDB , IDisposable
     {
         public delegate void Debug(string result);
         public event Debug DebugEventParams;
@@ -21,7 +21,7 @@ namespace QManagerOracle
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("[Debug] ");
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine(result);
+            Console.Write(result);
         }
 
         public SQLLdr(ParamsDB @params) : base()
@@ -71,13 +71,14 @@ namespace QManagerOracle
                 process.StartInfo.RedirectStandardInput = true;
                 process.StartInfo.FileName = FileNameSystem;
 
-                process.StartInfo.CreateNoWindow = false;
+                process.StartInfo.CreateNoWindow = !CriarNovaJanela;
 
                 process.Start();
                 ProcessID = process.Id;
                 string[] log = loader.FileUpload.Split(new string[] { ".txt", ".csv", @"\", "." }, StringSplitOptions.RemoveEmptyEntries);
                 string NomeSemExtensao = log[log.Length - 1];
                 string ProcPar = $@"{ComandoStartNewWindow}{PathClient}SQLLDR.exe {Credentials} control={loader.FileControl} log=.\LOG\{NomeSemExtensao}.log bad=.\BAD\{NomeSemExtensao}.bad data={loader.FileUpload}";
+                //process.StandardInput.WriteLine("@echo on");
                 process.StandardInput.WriteLine(ProcPar);
                 process.StandardInput.Flush();
                 process.StandardInput.Close();
@@ -85,7 +86,11 @@ namespace QManagerOracle
                 {
                     DebugEventParams.Invoke(ProcPar + Environment.NewLine);
                 }
-                DebugEventParams.Invoke(process.StandardOutput.ReadToEnd());
+                while (!process.StandardOutput.EndOfStream)
+                {
+                    DebugEventParams.Invoke(process.StandardOutput.ReadLine() + Environment.NewLine);
+                }
+                
                 process.WaitForExit();
             }
         }
@@ -99,28 +104,12 @@ namespace QManagerOracle
                 };
             }
         }
-        string ExecuteS(ParamsLoader loader, ParamsDB paramsDB)
-        {
-            Execute(loader, paramsDB);
-            return string.Empty;
-        }
-        [Obsolete("Será retirado na proxima release, utilize o evento DebugEventParams para acompanhar em tempo real.")]
-        public async Task<string> ExecuteAsync(ParamsLoader loader, ParamsDB paramsDB = null)
+                
+        public async Task ExecuteAsync(ParamsLoader loader, ParamsDB paramsDB = null)
         {
             try
             {
-                return await Task.Run(() => ExecuteS(loader, paramsDB));
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-        public async void ExecuteAsync(ParamsLoader loader, ParamsDB paramsDB = null)
-        {
-            try
-            {
-                await Task.Run(() => ExecuteS(loader, paramsDB));
+                await Task.Run(() => Execute(loader, paramsDB));
             }
             catch (Exception ex)
             {
@@ -137,6 +126,28 @@ namespace QManagerOracle
             {
                 throw new Exception(ex.Message);
             }
+        }
+        public Task TaskExecute(ParamsLoader loader, ParamsDB paramsDB = null)
+        {
+            try
+            {
+                return new Task(() =>
+                {
+                    Execute(loader, paramsDB);
+                }
+                ); 
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+        }
+
+        public void Dispose()
+        {
+            KillProcess();
+            GC.SuppressFinalize(this);
         }
     }
 }
