@@ -10,34 +10,5 @@
 
 
 
-# How to use
-```csharp
-using QManagerOracle;
-using QManagerOracle.Parameters;
-
-async void teste()
-{
-    SQLPlus sql = new SQLPlus();
-    SQLLdr ldr = new SQLLdr();
-    var paramsDB = new ParamsDB()
-    {
-        CriarNovaJanela = true,
-        IPAdress = "192.168.0.4",
-        PassDB = "1234"
-    };
-    await sql.ExecuteAsync(new ParamsScript() 
-	{ 
-		Parameters = "", 
-		ScriptDir = Environment.CurrentDirectory, 
-		ScriptName = "criar_tabela.sql" 
-	}, paramsDB);
-    await ldr.ExecuteAsync(new ParamsLoader() 
-	{ 
-		DirWorkControl = Environment.CurrentDirectory, 
-		FileUpload = "carga_teste.txt", 
-		FileControl = "carga.ctl" 
-	}, paramsDB);
-}
-
-```
+# [How to use](https://github.com/FerasGamesHosting/QManagerOracle/wiki/How-to-use)
 
